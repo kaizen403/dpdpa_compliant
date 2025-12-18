@@ -1,0 +1,30 @@
+{
+    "name": "datavault",
+    "version": "1.0.0",
+    "description": "DataVault - DPDPA Compliant Personal Data Locker",
+    "private": true,
+    "scripts": {
+        "dev": "concurrently \"npm run dev:be\" \"npm run dev:fe\"",
+        "dev:fe": "cd fe && npm run dev",
+        "dev:be": "cd be && npm run dev",
+        "build": "npm run build:be && npm run build:fe",
+        "build:fe": "cd fe && npm run build",
+        "build:be": "cd be && npm run build",
+        "db:generate": "cd be && npx prisma generate",
+        "db:migrate": "cd be && npx prisma migrate dev",
+        "db:seed": "cd be && npx prisma db seed",
+        "db:studio": "cd be && npx prisma studio",
+        "install:all": "npm install && cd fe && npm install && cd ../be && npm install"
+    },
+    "devDependencies": {
+        "@types/express-rate-limit": "^6.0.2",
+        "concurrently": "^8.2.2"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    },
+    "dependencies": {
+        "express-rate-limit": "^8.2.1",
+        "helmet": "^8.1.0"
+    }
+}

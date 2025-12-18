@@ -1,0 +1,28 @@
+services:
+  # Backend Service
+  - type: web
+    name: datavault-backend
+    runtime: node
+    buildCommand: cd be && pnpm install && pnpm build && npx prisma migrate deploy && npx prisma db seed
+    startCommand: cd be && pnpm start
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+    plan: free
+
+  # Frontend Service
+  - type: web
+    name: datavault-frontend
+    runtime: node
+    buildCommand: cd fe && pnpm install && pnpm build
+    startCommand: cd fe && pnpm start
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        sync: false # Set this to Backend URL + /api (e.g., https://datavault-be.onrender.com/api)
+    plan: free
