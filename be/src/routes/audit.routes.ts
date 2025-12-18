@@ -2,7 +2,7 @@ import { Router, Response } from 'express';
 import { PrismaClient, AuditAction } from '../generated/prisma/client.js';
 import { authMiddleware, AuthRequest } from '../middleware/auth.middleware.js';
 
-const router = Router();
+const router: Router = Router();
 
 // All routes require authentication
 router.use(authMiddleware);

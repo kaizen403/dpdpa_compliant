@@ -6,7 +6,7 @@ import { body, validationResult } from 'express-validator';
 import { authMiddleware, AuthRequest } from '../middleware/auth.middleware.js';
 import { createAuditLog } from '../services/audit.service.js';
 
-const router = Router();
+const router: Router = Router();
 
 // Validation rules
 const registerValidation = [
@@ -59,7 +59,7 @@ router.post('/register', registerValidation, async (req: AuthRequest, res: Respo
         const token = jwt.sign(
             { userId: user.id, email: user.email },
             process.env.JWT_SECRET || 'default-secret',
-            { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+            { expiresIn: '7d' }
         );
 
         // Create default personal data entries
@@ -110,7 +110,7 @@ router.post('/login', loginValidation, async (req: AuthRequest, res: Response) =
         const token = jwt.sign(
             { userId: user.id, email: user.email },
             process.env.JWT_SECRET || 'default-secret',
-            { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+            { expiresIn: '7d' }
         );
 
         // Update last login activity data

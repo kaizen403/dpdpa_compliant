@@ -3,7 +3,7 @@ import { PrismaClient, ConsentStatus, AuditAction } from '../generated/prisma/cl
 import { authMiddleware, AuthRequest } from '../middleware/auth.middleware.js';
 import { createAuditLog } from '../services/audit.service.js';
 
-const router = Router();
+const router: Router = Router();
 
 // All routes require authentication
 router.use(authMiddleware);

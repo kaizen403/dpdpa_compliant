@@ -44,6 +44,18 @@ export function getActionDescription(action: AuditAction): string {
         LOGIN: 'Logged in',
         LOGOUT: 'Logged out',
         PROFILE_UPDATE: 'Updated profile',
+        FILE_UPLOAD: 'Uploaded file',
+        FILE_VIEW: 'Viewed file',
+        FILE_DOWNLOAD: 'Downloaded file',
+        FILE_DELETE: 'Deleted file',
+        PASSWORD_CREATE: 'Created password entry',
+        PASSWORD_VIEW: 'Viewed password entry',
+        PASSWORD_UPDATE: 'Updated password entry',
+        PASSWORD_DELETE: 'Deleted password entry',
+        NOTE_CREATE: 'Created secure note',
+        NOTE_VIEW: 'Viewed secure note',
+        NOTE_UPDATE: 'Updated secure note',
+        NOTE_DELETE: 'Deleted secure note',
     };
 
     return descriptions[action] || action;

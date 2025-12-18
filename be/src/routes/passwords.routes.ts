@@ -4,7 +4,7 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { authMiddleware, AuthRequest } from '../middleware/auth.middleware.js';
 import { createAuditLog } from '../services/audit.service.js';
 
-const router = Router();
+const router: Router = Router();
 
 // Setup Prisma
 const connectionString = `${process.env.DATABASE_URL}`;

@@ -9,7 +9,7 @@ import path from 'path';
 import fs from 'fs';
 import rateLimit from 'express-rate-limit';
 
-const router = Router();
+const router: Router = Router();
 
 // Setup Prisma
 const connectionString = `${process.env.DATABASE_URL}`;
