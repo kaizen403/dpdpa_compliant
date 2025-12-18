@@ -229,7 +229,10 @@ class ApiClient {
 
         // Handle blob responses (for exports)
         const contentType = response.headers.get('content-type');
-        if (contentType?.includes('text/csv') || options.headers?.['Accept'] === 'text/csv') {
+        const acceptHeader = options.headers && typeof options.headers === 'object' && 'Accept' in options.headers
+            ? (options.headers as Record<string, string>)['Accept']
+            : undefined;
+        if (contentType?.includes('text/csv') || acceptHeader === 'text/csv') {
             return response.blob() as unknown as T;
         }
 
