@@ -1,0 +1,218 @@
+// DataVault - DPDPA Compliant Personal Data Locker
+// Prisma Schema
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// User account model
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  personalData    PersonalData[]
+  consents        Consent[]
+  auditLogs       AuditLog[]
+  secureFiles     SecureFile[]
+  passwordEntries PasswordEntry[]
+  secureNotes     SecureNote[]
+
+  @@map("users")
+}
+
+// Personal data items stored in the vault
+model PersonalData {
+  id             String       @id @default(cuid())
+  userId         String
+  category       DataCategory
+  fieldName      String
+  fieldValue     String // In production, this should be encrypted
+  purpose        String // Why this data is collected
+  collectedAt    DateTime     @default(now())
+  source         String // Where the data was collected from
+  dataController String // Entity responsible for data
+  retentionDays  Int // How long data will be retained
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  consents Consent[]
+
+  @@index([userId])
+  @@index([category])
+  @@map("personal_data")
+}
+
+// Categories of personal data (DPDPA classification)
+enum DataCategory {
+  IDENTITY // Name, DOB, Gender, Photo
+  CONTACT // Email, Phone, Address
+  FINANCIAL // Bank details, PAN, credit info
+  USAGE // App usage patterns, preferences
+  ACTIVITY // Login logs, IP addresses, device info
+  SENSITIVE // Health, biometric, religious (requires special handling)
+}
+
+// Consent records for data usage
+model Consent {
+  id             String        @id @default(cuid())
+  userId         String
+  personalDataId String?
+  purpose        String // Specific purpose for this consent
+  status         ConsentStatus
+  grantedAt      DateTime?
+  withdrawnAt    DateTime?
+  expiresAt      DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  personalData PersonalData? @relation(fields: [personalDataId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([status])
+  @@map("consents")
+}
+
+// Consent status values
+enum ConsentStatus {
+  GRANTED
+  WITHDRAWN
+  EXPIRED
+  PENDING
+}
+
+// Audit log for all data operations (DPDPA accountability)
+model AuditLog {
+  id         String      @id @default(cuid())
+  userId     String
+  action     AuditAction
+  entityType String // e.g., "PersonalData", "Consent", "SecureFile"
+  entityId   String? // ID of the affected entity
+  details    Json? // Additional context
+  ipAddress  String?
+  userAgent  String?
+  timestamp  DateTime    @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([timestamp])
+  @@index([action])
+  @@map("audit_logs")
+}
+
+// Types of auditable actions
+enum AuditAction {
+  DATA_VIEW
+  DATA_CREATE
+  DATA_UPDATE
+  DATA_DELETE
+  DATA_EXPORT
+  CONSENT_GRANT
+  CONSENT_WITHDRAW
+  LOGIN
+  LOGOUT
+  PROFILE_UPDATE
+  // Vault actions
+  FILE_UPLOAD
+  FILE_VIEW
+  FILE_DOWNLOAD
+  FILE_DELETE
+  PASSWORD_CREATE
+  PASSWORD_VIEW
+  PASSWORD_UPDATE
+  PASSWORD_DELETE
+  NOTE_CREATE
+  NOTE_VIEW
+  NOTE_UPDATE
+  NOTE_DELETE
+}
+
+// ============================================
+// VAULT FEATURES - Secure Storage
+// ============================================
+
+// Secure file storage (DPDPA: Purpose-bound, consent-tracked)
+model SecureFile {
+  id           String       @id @default(cuid())
+  userId       String
+  fileName     String // Internal unique filename
+  originalName String // Original upload filename
+  mimeType     String
+  fileSize     Int // Size in bytes
+  purpose      String // DPDPA: Why this file is stored
+  category     FileCategory
+  filePath     String? // Path to stored file
+  isActive     Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([category])
+  @@map("secure_files")
+}
+
+// File categories
+enum FileCategory {
+  DOCUMENT // IDs, contracts, certificates
+  FINANCIAL // Tax docs, bank statements
+  MEDICAL // Health records, prescriptions
+  LEGAL // Legal documents, agreements
+  PERSONAL // Photos, personal documents
+  OTHER
+}
+
+// Password manager entries
+model PasswordEntry {
+  id                String    @id @default(cuid())
+  userId            String
+  websiteName       String // Display name (e.g., "Google")
+  websiteUrl        String? // URL for favicon/autofill
+  username          String
+  encryptedPassword String // Base64 encoded (demo) or AES encrypted (prod)
+  notes             String?
+  category          String? // Work, Personal, Finance, Social, etc.
+  lastUsed          DateTime?
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([category])
+  @@map("password_entries")
+}
+
+// Secure notes
+model SecureNote {
+  id               String   @id @default(cuid())
+  userId           String
+  title            String
+  encryptedContent String // Base64 encoded content
+  category         String? // Personal, Work, Ideas, etc.
+  isPinned         Boolean  @default(false)
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isPinned])
+  @@map("secure_notes")
+}

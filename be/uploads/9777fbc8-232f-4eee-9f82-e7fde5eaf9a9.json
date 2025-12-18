@@ -1,0 +1,51 @@
+{
+  "exportedAt": "2025-12-18T21:24:48.776Z",
+  "userId": "cmjby1fvq00000rcmhhv2dynn",
+  "itemCount": 2,
+  "data": [
+    {
+      "id": "cmjby1fw400010rcmhg908hxa",
+      "userId": "cmjby1fvq00000rcmhhv2dynn",
+      "category": "IDENTITY",
+      "fieldName": "Full Name",
+      "fieldValue": "RIshi",
+      "purpose": "Account identification and personalization",
+      "collectedAt": "2025-12-18T21:19:36.628Z",
+      "source": "User Registration",
+      "dataController": "DataVault Inc.",
+      "retentionDays": 365,
+      "isActive": true,
+      "createdAt": "2025-12-18T21:19:36.628Z",
+      "updatedAt": "2025-12-18T21:19:36.628Z",
+      "consents": [
+        {
+          "status": "GRANTED",
+          "purpose": "Account identification and personalization",
+          "grantedAt": "2025-12-18T21:19:36.637Z"
+        }
+      ]
+    },
+    {
+      "id": "cmjby1fwo00030rcm1tddy3a4",
+      "userId": "cmjby1fvq00000rcmhhv2dynn",
+      "category": "CONTACT",
+      "fieldName": "Email Address",
+      "fieldValue": "rishivhavle21@gmail.com",
+      "purpose": "Account login and communication",
+      "collectedAt": "2025-12-18T21:19:36.648Z",
+      "source": "User Registration",
+      "dataController": "DataVault Inc.",
+      "retentionDays": 365,
+      "isActive": true,
+      "createdAt": "2025-12-18T21:19:36.648Z",
+      "updatedAt": "2025-12-18T21:19:36.648Z",
+      "consents": [
+        {
+          "status": "GRANTED",
+          "purpose": "Account login and communication",
+          "grantedAt": "2025-12-18T21:23:52.066Z"
+        }
+      ]
+    }
+  ]
+}
