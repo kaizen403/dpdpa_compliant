@@ -5,6 +5,9 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from './generated/prisma/client.js';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 
 import authRoutes from './routes/auth.routes.js';
 import dataRoutes from './routes/data.routes.js';
@@ -17,6 +20,9 @@ import { errorHandler } from './middleware/error.middleware.js';
 
 dotenv.config();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app: Express = express();
 
 // Create PostgreSQL connection using Prisma adapter
@@ -25,9 +31,12 @@ const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
 const PORT = process.env.PORT || 4000;
+const FRONTEND_PORT = process.env.FRONTEND_PORT || 3000;
 
 // Middleware
-app.use(helmet()); // Secure HTTP headers
+app.use(helmet({
+    contentSecurityPolicy: false, // Disable CSP for proxied frontend
+}));
 app.use(cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:3000',
     credentials: true,
@@ -64,8 +73,17 @@ app.use('/api/files', filesRoutes);
 app.use('/api/passwords', passwordsRoutes);
 app.use('/api/notes', notesRoutes);
 
-// Error handling
-app.use(errorHandler);
+// Error handling for API routes
+app.use('/api', errorHandler);
+
+// Proxy all non-API requests to Next.js frontend (for single-service deployment)
+if (process.env.NODE_ENV === 'production') {
+    app.use('/', createProxyMiddleware({
+        target: `http://localhost:${FRONTEND_PORT}`,
+        changeOrigin: true,
+        ws: true,
+    }));
+}
 
 // Graceful shutdown
 process.on('SIGINT', async () => {
