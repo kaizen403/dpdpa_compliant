@@ -1,7 +1,8 @@
-import express from 'express';
+import express, { Express } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from './generated/prisma/client.js';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { spawn } from 'child_process';
 import path from 'path';
@@ -14,8 +15,9 @@ import { errorHandler } from './middleware/error.middleware.js';
 
 dotenv.config();
 
-const app = express();
-const prisma = new PrismaClient();
+const app: Express = express();
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
+const prisma = new PrismaClient({ adapter });
 const PORT = process.env.PORT || 10000;
 const FRONTEND_PORT = 3000;
 
