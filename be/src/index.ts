@@ -11,6 +11,9 @@ import authRoutes from './routes/auth.routes.js';
 import dataRoutes from './routes/data.routes.js';
 import consentRoutes from './routes/consent.routes.js';
 import auditRoutes from './routes/audit.routes.js';
+import filesRoutes from './routes/files.routes.js';
+import passwordsRoutes from './routes/passwords.routes.js';
+import notesRoutes from './routes/notes.routes.js';
 import { errorHandler } from './middleware/error.middleware.js';
 
 dotenv.config();
@@ -52,6 +55,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/data', dataRoutes);
 app.use('/api/consent', consentRoutes);
 app.use('/api/audit', auditRoutes);
+
+// Vault routes
+app.use('/api/files', filesRoutes);
+app.use('/api/passwords', passwordsRoutes);
+app.use('/api/notes', notesRoutes);
 
 // Error handling for API
 app.use('/api', errorHandler);
